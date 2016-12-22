@@ -12,6 +12,8 @@ class ATheApocalypseCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
+	class USkeletalMeshComponent* Mesh1P;
+
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
@@ -21,6 +23,11 @@ class ATheApocalypseCharacter : public ACharacter
 
 	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
 		class USoundCue* ReloadSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+		class UAnimMontage* ReloadAnim;
+
+	UAnimInstance* AnimInstance;
 
 	FTimerHandle shootRate;
 public:

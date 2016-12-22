@@ -20,6 +20,7 @@ ATheApocalypseCharacter::ATheApocalypseCharacter()
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
 
+
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -210,6 +211,11 @@ void ATheApocalypseCharacter::Reload(){
 		ammo = maxAmmo;
 		bCanShoot = false;
 		PlaySound(ReloadSound);
+		Mesh1P = GetMesh();
+		AnimInstance = Mesh1P->GetAnimInstance();
+		if (AnimInstance && Mesh1P) {
+			AnimInstance->Montage_Play(ReloadAnim, 1.0f);
+		}
 	}
 }
 
