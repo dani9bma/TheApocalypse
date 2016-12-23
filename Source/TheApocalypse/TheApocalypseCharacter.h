@@ -1,6 +1,11 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Character.h"
+#include "Runtime/UMG/Public/UMG.h"
+#include "Runtime/UMG/Public/UMGStyle.h"
+#include "Runtime/UMG/Public/Slate/SObjectWidget.h"
+#include "Runtime/UMG/Public/IUMGModule.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "TheApocalypseCharacter.generated.h"
 
 UCLASS(config = Game)
@@ -24,12 +29,18 @@ class ATheApocalypseCharacter : public ACharacter
 	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
 		class USoundCue* ReloadSound;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 		class UAnimMontage* ReloadAnim;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Animations")
+		class UAnimMontage* DeathAnim;
 
 	UAnimInstance* AnimInstance;
 
 	FTimerHandle shootRate;
+
+	float deathAnimTime;
+
 public:
 	ATheApocalypseCharacter();
 
@@ -64,6 +75,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsReloading;
 
+	UPROPERTY(BlueprintReadOnly)
+		bool bIsDead = false;
+
 	UPROPERTY(BlueprintReadWrite)
 		int32 ammo;
 
@@ -72,6 +86,16 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 		bool bCanShoot;
+
+	UPROPERTY(BlueprintReadOnly)
+		float Health;
+
+	float MaxHealth = 100;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player, HUD and UI")
+		TSubclassOf<UUserWidget> InventoryUIClass;
+
+	UUserWidget* InventoryWidget;
 
 
 protected:
@@ -126,7 +150,11 @@ protected:
 
 	void StopShoot();
 
+	void PlayAnimation(UAnimMontage* AnimationToPlay);
+
 	UAudioComponent* PlaySound(USoundCue* SoundToPlay);
+
+	float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
 
 public:
 

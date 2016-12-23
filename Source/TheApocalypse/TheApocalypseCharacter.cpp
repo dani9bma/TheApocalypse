@@ -4,6 +4,11 @@
 #include "Runtime/Engine/Classes/Sound/SoundCue.h"
 #include "Runtime/Engine/Classes/Animation/AnimInstance.h"
 #include "Runtime/Engine/Classes/GameFramework/Actor.h"
+#include "Runtime/UMG/Public/UMG.h"
+#include "Runtime/UMG/Public/UMGStyle.h"
+#include "Runtime/UMG/Public/Slate/SObjectWidget.h"
+#include "Runtime/UMG/Public/IUMGModule.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "TheApocalypseCharacter.h"
 
@@ -43,6 +48,7 @@ ATheApocalypseCharacter::ATheApocalypseCharacter()
 	FollowCamera->SetupAttachment(CameraBoom); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	Health = MaxHealth;
 												   // Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 												   // are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -88,7 +94,15 @@ void ATheApocalypseCharacter::Tick(float DeltaTime) {
 
 	Super::Tick(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("%f"),reloadTime)
+	//UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
+
+	if (bIsDead) {
+		deathAnimTime += DeltaTime;
+	}
+
+	if (deathAnimTime >= 1.7f) {
+		Destroy();
+	}
 
 	if (bIsJumping) {
 		jumpTime += DeltaTime;
@@ -113,8 +127,6 @@ void ATheApocalypseCharacter::Tick(float DeltaTime) {
 		bCanShoot = true;
 	}
 
-
-
 }
 
 void ATheApocalypseCharacter::Shoot(){
@@ -127,6 +139,15 @@ void ATheApocalypseCharacter::StopShoot(){
 
 	bIsFiring = false;
 	
+}
+
+void ATheApocalypseCharacter::PlayAnimation(UAnimMontage* AnimationToPlay){
+
+	Mesh1P = GetMesh();
+	AnimInstance = Mesh1P->GetAnimInstance();
+	if (AnimInstance && Mesh1P) {
+		AnimInstance->Montage_Play(AnimationToPlay, 1.0f);
+	}
 }
 
 UAudioComponent* ATheApocalypseCharacter::PlaySound(USoundCue* SoundToPlay){
@@ -211,13 +232,27 @@ void ATheApocalypseCharacter::Reload(){
 		ammo = maxAmmo;
 		bCanShoot = false;
 		PlaySound(ReloadSound);
-		Mesh1P = GetMesh();
-		AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance && Mesh1P) {
-			AnimInstance->Montage_Play(ReloadAnim, 1.0f);
-		}
+		PlayAnimation(ReloadAnim);
 	}
 }
+
+float ATheApocalypseCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser){
+	const float ActualDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	Health = Health - ActualDamage;
+	if (Health <= 0 && !bIsDead) {
+		PlayAnimation(DeathAnim);
+		UE_LOG(LogTemp, Warning, TEXT("You Died"));
+		bIsDead = true;
+		DisableInput(GetWorld()->GetFirstPlayerController());
+		InventoryWidget = CreateWidget<UUserWidget>(GetWorld(), InventoryUIClass);
+		InventoryWidget->AddToViewport();
+		GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
+	}
+	return ActualDamage;
+}
+
+
 
 void ATheApocalypseCharacter::TurnAtRate(float Rate)
 {
