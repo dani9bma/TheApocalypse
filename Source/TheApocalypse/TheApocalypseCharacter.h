@@ -56,6 +56,8 @@ public:
 
 	float reloadTime;
 
+	float useTime;
+
 
 	UPROPERTY(BlueprintReadOnly)
 		bool bIsJumping;
@@ -79,6 +81,9 @@ public:
 		bool bIsDead = false;
 
 	UPROPERTY(BlueprintReadWrite)
+		bool bIsUsing;
+
+	UPROPERTY(BlueprintReadWrite)
 		int32 ammo;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -86,6 +91,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 		bool bCanShoot;
+
+	UPROPERTY(BlueprintReadWrite)
+		bool bHaveKey;
 
 	UPROPERTY(BlueprintReadOnly)
 		float Health;
@@ -149,6 +157,8 @@ protected:
 	void Shoot();
 
 	void StopShoot();
+
+	void Use();
 
 	void PlayAnimation(UAnimMontage* AnimationToPlay);
 

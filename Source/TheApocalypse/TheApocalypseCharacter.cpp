@@ -70,6 +70,7 @@ void ATheApocalypseCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ATheApocalypseCharacter::Shoot);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ATheApocalypseCharacter::StopShoot);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ATheApocalypseCharacter::Reload);
+	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &ATheApocalypseCharacter::Use);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATheApocalypseCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATheApocalypseCharacter::MoveRight);
@@ -94,32 +95,29 @@ void ATheApocalypseCharacter::Tick(float DeltaTime) {
 
 	Super::Tick(DeltaTime);
 
-	//UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
+	//UE_LOG(LogTemp, Warning, TEXT("%s"), bIsUsing);
 
-	if (bIsDead) {
+	if (bIsDead)
 		deathAnimTime += DeltaTime;
-	}
 
-	if (deathAnimTime >= 1.7f) {
+	if (deathAnimTime >= 1.7f)
 		Destroy();
-	}
 
-	if (bIsJumping) {
+
+	if (bIsJumping)
 		jumpTime += DeltaTime;
-	}
+
 
 	if (jumpTime > 0.7) {
 		bIsJumping = false;
 		jumpTime = 0.f;
 	}
 
-	if (ammo <= 0) {
+	if (ammo <= 0)
 		Reload();
-	}
 
-	if (bIsReloading) {
+	if (bIsReloading)
 		reloadTime += DeltaTime;
-	}
 
 	if (reloadTime >= 2.1f) {
 		reloadTime = 0;
@@ -127,6 +125,10 @@ void ATheApocalypseCharacter::Tick(float DeltaTime) {
 		bCanShoot = true;
 	}
 
+}
+
+void ATheApocalypseCharacter::Use() {
+	bIsUsing = true;
 }
 
 void ATheApocalypseCharacter::Shoot(){
