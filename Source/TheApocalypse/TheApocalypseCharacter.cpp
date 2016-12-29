@@ -97,7 +97,11 @@ void ATheApocalypseCharacter::Tick(float DeltaTime) {
 
 	Super::Tick(DeltaTime);
 
-	//UE_LOG(LogTemp, Warning, TEXT("%s"), bIsUsing);
+	UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
+
+	if (Health < 100 && Health > 0) {
+		RestoreLife(DeltaTime);
+	}
 
 	if (bIsDead)
 		deathAnimTime += DeltaTime;
@@ -141,6 +145,17 @@ void ATheApocalypseCharacter::ShowScoreboard(){
 
 void ATheApocalypseCharacter::HideScoreboard(){
 	ScoreboardWidget->RemoveFromViewport();
+}
+
+void ATheApocalypseCharacter::RestoreLife(float DeltaTime){
+	UE_LOG(LogTemp, Warning, TEXT("Restoring Life"));
+	healthTime += DeltaTime;
+	float healthMissing;
+	healthMissing = 100 - Health;
+	if (healthTime >= 3.f) {
+		Health += healthMissing;
+		healthTime = 0;
+	}
 }
 
 void ATheApocalypseCharacter::Shoot(){

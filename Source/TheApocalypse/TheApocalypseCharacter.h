@@ -99,6 +99,8 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		float Health;
 
+	float healthTime;
+
 	float MaxHealth = 100;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player, HUD and UI")
@@ -169,6 +171,8 @@ protected:
 	void ShowScoreboard();
 
 	void HideScoreboard();
+
+	void RestoreLife(float DeltaTime);
 
 	void PlayAnimation(UAnimMontage* AnimationToPlay);
 
