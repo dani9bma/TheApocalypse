@@ -71,6 +71,8 @@ void ATheApocalypseCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ATheApocalypseCharacter::StopShoot);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ATheApocalypseCharacter::Reload);
 	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &ATheApocalypseCharacter::Use);
+	PlayerInputComponent->BindAction("Scoreboard", IE_Pressed, this, &ATheApocalypseCharacter::ShowScoreboard);
+	PlayerInputComponent->BindAction("Scoreboard", IE_Released, this, &ATheApocalypseCharacter::HideScoreboard);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATheApocalypseCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATheApocalypseCharacter::MoveRight);
@@ -129,6 +131,16 @@ void ATheApocalypseCharacter::Tick(float DeltaTime) {
 
 void ATheApocalypseCharacter::Use() {
 	bIsUsing = true;
+}
+
+void ATheApocalypseCharacter::ShowScoreboard(){
+
+	ScoreboardWidget = CreateWidget<UUserWidget>(GetWorld(), ScoreboardUIClass);
+	ScoreboardWidget->AddToViewport();
+}
+
+void ATheApocalypseCharacter::HideScoreboard(){
+	ScoreboardWidget->RemoveFromViewport();
 }
 
 void ATheApocalypseCharacter::Shoot(){
@@ -244,7 +256,6 @@ float ATheApocalypseCharacter::TakeDamage(float Damage, struct FDamageEvent cons
 	Health = Health - ActualDamage;
 	if (Health <= 0 && !bIsDead) {
 		PlayAnimation(DeathAnim);
-		UE_LOG(LogTemp, Warning, TEXT("You Died"));
 		bIsDead = true;
 		DisableInput(GetWorld()->GetFirstPlayerController());
 		InventoryWidget = CreateWidget<UUserWidget>(GetWorld(), InventoryUIClass);

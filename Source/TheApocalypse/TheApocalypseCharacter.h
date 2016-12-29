@@ -35,6 +35,7 @@ class ATheApocalypseCharacter : public ACharacter
 	UPROPERTY(EditDefaultsOnly, Category = "Animations")
 		class UAnimMontage* DeathAnim;
 
+
 	UAnimInstance* AnimInstance;
 
 	FTimerHandle shootRate;
@@ -105,6 +106,11 @@ public:
 
 	UUserWidget* InventoryWidget;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player, HUD and UI")
+		TSubclassOf<UUserWidget> ScoreboardUIClass;
+
+	UUserWidget* ScoreboardWidget;
+
 
 protected:
 
@@ -159,6 +165,10 @@ protected:
 	void StopShoot();
 
 	void Use();
+
+	void ShowScoreboard();
+
+	void HideScoreboard();
 
 	void PlayAnimation(UAnimMontage* AnimationToPlay);
 
